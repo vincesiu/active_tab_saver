@@ -1,15 +1,14 @@
 {
-  "name": "shimeru",
-  "version": "1.0",
-  "description": "Saves everything",
-  "permissions": ["activeTab", "declarativeContent", "storage", "tabs", "clipboardWrite"],
+  "name": "Active Tab Saver",
+  "version": "1.1",
+  "description": "Saves your currently active tabs to clipboard",
+  "permissions": ["clipboardWrite", "notifications", "tabs"],
 
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
   "browser_action": {
-    // "default_popup": "popup.html",
     "default_icon": {
       "16": "images/get_started16.png",
       "32": "images/get_started32.png",
@@ -23,5 +22,8 @@
     "48": "images/get_started48.png",
     "128": "images/get_started128.png"
   },
+  "web_accessible_resources": [
+    "images/copy_successful.png"
+  ],
   "manifest_version": 2
 }

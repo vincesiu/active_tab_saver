@@ -4,42 +4,37 @@
 
 'use strict';
 
+function copy_to_clipboard(text_to_copy) {
+  // pretty jank, but I guess this is the state of web development
+  console.log('Copying to clipboard');
+  const ta = document.createElement('textarea');
+  ta.style.cssText = 'opacity:0; position:fixed; width:1px; height:1px; top:0; left:0;';
+  ta.value = text_to_copy;
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  document.execCommand('copy');
+  ta.remove();
+  console.log('Copied text to clipboard');
+}
+
 chrome.browserAction.onClicked.addListener(function(_) {
   chrome.tabs.query({}, function(tabs) {
         var urls = [];
-
         console.log('Getting all the tab urls');
         tabs.forEach(tab => {
           urls.push(tab.url);
         });
+        var values = urls.join("\n");
+        console.log('Got ' + urls.length + ' tabs');
 
-        // pretty jank, but I guess this is the state of web development
-        console.log('Copying to clipboard');
-        const ta = document.createElement('textarea');
-        ta.style.cssText = 'opacity:0; position:fixed; width:1px; height:1px; top:0; left:0;';
-        ta.value = urls.join("\n");
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-
-        chrome.storage.local.set({'urls_copied': urls.length});
+        copy_to_clipboard(values);
+        chrome.notifications.create({
+          type: 'image',
+          message: 'Copied ' + urls.length + ' urls to clipboard',
+          iconUrl:  chrome.runtime.getURL("images/copy_successful.png"),
+          imageUrl:  chrome.runtime.getURL("images/copy_successful.png"),
+          title: 'Active Tab Saver',
+        });
       });
   });
-
-/* Old clipboard copy code
-
-Doesn't work because of the error 'DOM is not in focus'
-This is preferable
-        navigator.clipboard.writeText(urls.join("\n"))
-          .then(() => {
-            console.log('Text copied to clipboard');
-          })
-          .catch(err => {
-            // This can happen if the user denies clipboard permissions:
-            // In this script, it happens because the extension background page 
-            // is not in focus
-            console.error('Could not copy text: ', err);
-          });
-*/
